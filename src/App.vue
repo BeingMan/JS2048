@@ -1,36 +1,35 @@
 <template>
-  <div id="app">
-    <img src="./assets/logo.png">
-    <div>
-      <p>
-        If Element is successfully added to this project, you'll see an
-        <code v-text="'<el-button>'"></code>
-        below
-      </p>
-      <el-button>el-button</el-button>
-    </div>
-    <HelloWorld msg="Welcome to Your Vue.js App"/>
+  <div class="hello">
+    <h1>{{ msg }}</h1>
+    <form>
+      <input type="text" name="username" v-model="userName"> <br>
+      <input type="text" name="age" v-model="age"> <br>
+      <a href="javascript:;" @click="addUser">提交</a>
+    </form>
   </div>
 </template>
-
+ 
 <script>
-import HelloWorld from './components/HelloWorld.vue'
-
 export default {
-  name: 'app',
-  components: {
-    HelloWorld
+  name: 'hello',
+  data () {
+    return {
+      msg: 'Welcome to Your Vue.js App',
+      userName: '',
+      age: ''
+    }
+  },
+  methods: {
+    addUser () {
+      var name = this.userName
+      var age = this.age
+      this.$http.post('/api/user/addUser', {
+        username: name,
+        age: age
+      }, {}).then((response) => {
+        console.log(response)
+      })
+    }
   }
 }
 </script>
-
-<style>
-#app {
-  font-family: 'Avenir', Helvetica, Arial, sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  text-align: center;
-  color: #2c3e50;
-  margin-top: 60px;
-}
-</style>
