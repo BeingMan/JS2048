@@ -23,7 +23,7 @@
           <el-header>
             <el-row>
               <el-col :span="6">
-                <el-button type="primary" round @click="moveBox">开始</el-button>
+                <el-button type="primary" round @click="transArray(3)">开始</el-button>
               </el-col>
               <el-col :span="6">
                 <el-button type="primary" round @click="reGame">重置</el-button>
@@ -45,33 +45,47 @@
     data() {
       return {
         nums: [
-          [2, 2, 4, 4],
-          [2, 2, 4, 4],
-          [2, 2, 4, 4],
-          [2, 2, 4, 4]
+          [4, 8, 4,''],
+          ['', '', '', ''],
+          ['', '', '', ''],
+          ['', '', '', '']
         ]
       }
     },
     created() {
-      document.addEventListener('keyup', function (e) {
-        const map = {
-          37: 0,
-          38: 3,
-          39: 2,
-          40: 1
-        };
-        if (!(e.keyCode in map)) return;
-        this.handleMove(map[e.keyCode]);
-      })
+      document.addEventListener('keyup', this.handleKeyDown);
     },
     methods: {
-      transArray() {
+      transOne() {
         var newArray = this.nums[0].map(function (col, i) {
           return this.nums.map(function (row) {
             return row[i];
           })
         }, this);
         this.nums = newArray;
+      },
+      transTwo() {
+        this.nums.forEach((elements, index) => {
+          var newlist = new Array(4).fill('');
+          elements.forEach((element, index) => {
+            newlist[index] = elements[3 - index];
+          })
+          this.$set(this.nums, index, newlist);
+        })
+      },
+      transArray(items) {
+        switch (items) {
+          case 1:
+            this.transOne();
+            break;
+          case 2:
+            this.transTwo();
+            break;
+          case 3:
+            this.transOne();
+            this.transTwo();
+            break;
+        }
       },
       randomAdd() {
         var add = false;
@@ -85,8 +99,18 @@
           }
         }
       },
-      handleMove(times) {
-
+      handleKeyDown(e) {
+        const map = {
+          37: 0,
+          38: 1,
+          39: 2,
+          40: 3
+        };
+        if (!(e.keyCode in map)) return;
+        this.handleTask(map[e.keyCode]);
+      },
+      handleTask(times) {
+        this.moveBox(times);
       },
       reGame() {
         var arr = new Array();
@@ -101,37 +125,49 @@
           this.randomAdd();
         }
       },
-      moveBox() {
+      moveBox(times) {
+        this.transArray(times);
         var oldArray = this.nums;
-        var newArray = [];
-        var _this = this;
-        oldArray.forEach((elements,index) => {
+        var hasMoved = false;
+        oldArray.forEach((elements, index) => {
           var newlist = elements;
           var Merges = new Array(4).fill(false);
           elements.forEach((element, index) => {
             var isMerge = false;
             var newIndex = index;
             var newNum = element;
-            for (var i = index-1; i >=0 ; i--) {
-              if(newlist[i]===''){
+            if (element == '') return;
+            for (var i = index - 1; i >= 0; i--) {
+              if (newlist[i] === '') {
                 newlist[newIndex] = '';
                 newIndex = i;
-              }else if(Merges[i]){
+                hasMoved = true;
+              } else if (Merges[i]) {
                 break;
-              }else{
+              } else if (newlist[i] == element) {
                 newlist[newIndex] = '';
-                newNum = 2*element;
+                newNum = 2 * element;
                 newIndex = i;
                 isMerge = true;
+                hasMoved = true;
+                break;
+              }else{
                 break;
               }
             }
             Merges[newIndex] = isMerge;
-            newlist[newIndex] =newNum;
+            newlist[newIndex] = newNum;
           })
-          this.$set(this.nums,index,newlist);
+          this.$set(this.nums, index, newlist);
         });
-       
+        if (hasMoved) {
+          this.randomAdd();
+        }
+        if (times == 3) {
+          for (var i = 1; i <= 3; i++) this.transArray(times);
+        } else {
+          this.transArray(times);
+        }
       }
     }
   }
