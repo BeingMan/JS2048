@@ -2,7 +2,7 @@
   <el-container style="height: 600px">
     <el-header class="title">
       <el-row type="flex" justify="center">
-        2048小游戏
+        新用户注册
       </el-row>
     </el-header>
     <el-main style="margin: 0 auto">
@@ -20,10 +20,10 @@
     <el-footer>
       <el-row type="flex" justify="center" style="margin-top: -10%">
         <el-col :xs={span:6,offset:0} :md={span:2}>
-          <el-button type="primary" plain @click="reg">注册</el-button>
+          <el-button type="primary" plain @click="cancel">取消</el-button>
         </el-col>
         <el-col :xs={span:6,push:1} :md={span:2,push:1}>
-          <el-button type="primary" plain @click="addUser">登录</el-button>
+          <el-button type="primary" plain @click="addUser">确认</el-button>
         </el-col>
       </el-row>
     </el-footer>
@@ -37,41 +37,34 @@
         userName: '',
         password: '',
         centerDialogVisible: false,
-        centerDialogContent: ''
+        centerDialogContent:''
       }
     },
     methods: {
-      reg() {
-        this.$router.push({
-          path: '/reg'
-        });
+      cancel() {
+        this.$router.go(-1);
       },
       addUser() {
         var name = this.userName
         var password = this.password
-        if (!name || !password) {
+        if(!name || !password){
           this.$message.warning('用户名或密码不能为空');
-        } else {
-          this.$http.post('/api/user/login', {
-            username: name,
-            password: password
-          }, {}).then((response) => {
-            if (response.data.islogin) {
-              this.$router.push({
-                path: '/about'
-              });
-              this.$message.success(response.data.result.msg);
-              sessionStorage.setItem('user', name);
-              sessionStorage.setItem('grade', response.data.grade);
-              sessionStorage.setItem('curGrade', 0);
-            } else {
-              this.$message.error(response.data.result.msg);
-            }
-          }).catch(() => {
-
-          })
+        }else{
+          var _this = this;
+        this.$http.post('/api/user/register', {
+          username: name,
+          password: password
+        }, {}).then((response) => {
+          if (response.data.isreg) {
+            this.$message.success(response.data.result.msg);
+            this.$router.go(-1);
+          } else {
+            this.$message.error(response.data.result.msg);
+          }
+        }).catch(() => {
+          console.log("出错了")
+        })
         }
-
       }
     }
   }
