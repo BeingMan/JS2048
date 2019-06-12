@@ -23,25 +23,25 @@
         <el-container>
           <el-header>
             <el-row type="flex" justify="center">
-              <el-col :md="4" :xs="8">
+              <el-col :md="4" :xs="8" :sm="4">
                 <el-button type="primary" round @click="exit">退出</el-button>
               </el-col>
-              <el-col :md="8" :xs="6">
+              <el-col :md="8" :xs="6" :sm="4">
                 <el-button type="primary" round @click="reGame">重置</el-button>
               </el-col>
             </el-row>
           </el-header>
           <el-main>
             <el-row style="margin-bottom: 15px" type="flex" justify="center">
-              <el-col :md={span:4,pull:2} :xs="9">
+              <el-col :md={span:4,pull:2} :xs="9" :sm="4">
                 当前得分：{{getCurGrade}}
               </el-col>
-              <el-col :md={span:4,pull:3} :xs="11">
+              <el-col :md={span:4,pull:3} :xs="11" :sm="4">
                 历史最佳：{{getGrade}}
               </el-col>
             </el-row>
             <el-row class="list" type="flex" justify="center" v-for="(items,index) in nums" :key="index">
-              <el-col :md={span:1,pull:3} v-for="(item,index) in 4" :key="index" class="box"
+              <el-col :md={span:1,pull:3} v-for="(item,index) in 5" :key="index" class="box"
                 :class="['s'+items[item-1]]">{{items[item-1]}}
               </el-col>
             </el-row>
@@ -53,8 +53,21 @@
       <el-header class="ranktit">
         积分排行榜
       </el-header>
-      <el-main class="rank">
-        <el-table :data="getRank" style="width: 100%; height:200px;">
+      <el-main class="rank" style="margin-left: 80px">
+        <el-table :data="getRank" style="width: 200px; height:200px;">
+          <el-table-column prop="name" label="用户名" width="120">
+          </el-table-column>
+          <el-table-column prop="grade" label="积分" width="150">
+          </el-table-column>
+        </el-table>
+      </el-main>
+    </el-container>
+    <el-container class="hidden-xs-only hidden-md-and-up" style="background-color: wheat;">
+      <el-header class="ranktit">
+        积分排行榜
+      </el-header>
+      <el-main class="rank" style="margin: 0 auto">
+        <el-table :data="getRank" style="width: 400px; height:200px;">
           <el-table-column prop="name" label="用户名" width="200">
           </el-table-column>
           <el-table-column prop="grade" label="积分" width="200">
@@ -72,10 +85,11 @@
     data() {
       return {
         nums: [
-          ['', '', 2, ''],
-          ['', '', '', ''],
-          ['', 2, '', ''],
-          ['', '', '', '']
+          ['', '', 2, '', ''],
+          ['', '', '', '', ''],
+          ['', 2, '', '', ''],
+          ['', '', '', '', ''],
+          ['', '', '', '', '']
         ],
         grade: '',
         curGrade: '',
@@ -85,6 +99,9 @@
     created() {
       document.addEventListener('keyup', this.handleKeyDown);
       this.updateRank();
+      this.curGrade = sessionStorage.getItem('curGrade')
+      this.grade = sessionStorage.getItem('grade')
+      this.reGame()
     },
     methods: {
       exit() {
@@ -102,9 +119,9 @@
       },
       transTwo() {
         this.nums.forEach((elements, index) => {
-          var newlist = new Array(4).fill('');
+          var newlist = new Array(5).fill('');
           elements.forEach((element, index) => {
-            newlist[index] = elements[3 - index];
+            newlist[index] = elements[4 - index];
           })
           this.$set(this.nums, index, newlist);
         })
@@ -127,8 +144,8 @@
         var add = false;
         var x, y;
         while (!add) {
-          x = Math.round(3 * Math.random());
-          y = Math.round(3 * Math.random());
+          x = Math.round(4 * Math.random());
+          y = Math.round(4 * Math.random());
           if (this.nums[x][y] === '') {
             add = true;
             this.$set(this.nums[x], y, Math.random() > 0.9 ? 4 : 2);
@@ -150,9 +167,9 @@
       },
       reGame() {
         var arr = new Array();
-        for (var x = 0; x < 4; x++) {
+        for (var x = 0; x < 5; x++) {
           arr[x] = new Array();
-          for (var y = 0; y < 4; y++) {
+          for (var y = 0; y < 5; y++) {
             arr[x][y] = '';
           }
         }
@@ -172,7 +189,7 @@
           grade: grade
         }, {}).then((response) => {
           if (response.data.result.code == 1) {
-            alert(response.data.result.msg);
+            //alert(response.data.result.msg);
           } else {
             alert(response.data.result.msg)
           }
@@ -186,7 +203,7 @@
         var hasMoved = false;
         oldArray.forEach((elements, index) => {
           var newlist = elements;
-          var Merges = new Array(4).fill(false);
+          var Merges = new Array(5).fill(false);
           elements.forEach((element, index) => {
             var isMerge = false;
             var newIndex = index;
@@ -251,16 +268,16 @@
         get() {
           return this.grade;
         },
-        set() {
-          this.grade = sessionStorage.getItem('grade')
+        set(value) {
+          this.grade = value
         }
       },
       getCurGrade: {
         get() {
           return this.curGrade;
         },
-        set() {
-          this.curGrade = sessionStorage.getItem('curGrade')
+        set(value) {
+          this.curGrade = value
         }
       },
       getRank: function () {
