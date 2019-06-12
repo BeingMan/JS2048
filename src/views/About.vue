@@ -40,8 +40,9 @@
                 历史最佳：{{getGrade}}
               </el-col>
             </el-row>
-            <el-row class="list" type="flex" justify="center" v-for="items in nums">
-              <el-col :md={span:1,pull:3} v-for="item in 4" class="box" :class="['s'+items[item-1]]">{{items[item-1]}}
+            <el-row class="list" type="flex" justify="center" v-for="(items,index) in nums" :key="index">
+              <el-col :md={span:1,pull:3} v-for="(item,index) in 4" :key="index" class="box"
+                :class="['s'+items[item-1]]">{{items[item-1]}}
               </el-col>
             </el-row>
           </el-main>
@@ -171,9 +172,9 @@
           grade: grade
         }, {}).then((response) => {
           if (response.data.result.code == 1) {
-            console.log(response.data.result.msg);
+            alert(response.data.result.msg);
           } else {
-            console.log(response.data.result.msg)
+            alert(response.data.result.msg)
           }
         }).catch(() => {
 
@@ -235,10 +236,10 @@
       updateRank() {
         this.$http.post('/api/user/getRank', {}).then((response) => {
           if (response.data.result.code == 1) {
-            console.log(response.data.result.msg);
+            //alert(response.data.result.msg);
             this.rank = response.data.data;
           } else {
-            console.log(response.data.result.msg)
+            alert(response.data.result.msg)
           }
         }).catch(() => {
 
@@ -246,16 +247,23 @@
       }
     },
     computed: {
-      getGrade: function () {
-        this.grade = sessionStorage.getItem('grade')
-        return this.grade;
+      getGrade: {
+        get() {
+          return this.grade;
+        },
+        set() {
+          this.grade = sessionStorage.getItem('grade')
+        }
       },
-      getCurGrade: function () {
-        this.curGrade = sessionStorage.getItem('curGrade')
-        return this.curGrade;
+      getCurGrade: {
+        get() {
+          return this.curGrade;
+        },
+        set() {
+          this.curGrade = sessionStorage.getItem('curGrade')
+        }
       },
       getRank: function () {
-        console.log(this.rank)
         return this.rank
       }
     },

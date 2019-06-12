@@ -37,33 +37,32 @@
         userName: '',
         password: '',
         centerDialogVisible: false,
-        centerDialogContent:''
+        centerDialogContent: ''
       }
     },
     methods: {
       cancel() {
-        this.$router.go(-1);
+        this.$router.go(-1)
       },
       addUser() {
         var name = this.userName
         var password = this.password
-        if(!name || !password){
+        if (!name || !password) {
           this.$message.warning('用户名或密码不能为空');
-        }else{
-          var _this = this;
-        this.$http.post('/api/user/register', {
-          username: name,
-          password: password
-        }, {}).then((response) => {
-          if (response.data.isreg) {
-            this.$message.success(response.data.result.msg);
-            this.$router.go(-1);
-          } else {
-            this.$message.error(response.data.result.msg);
-          }
-        }).catch(() => {
-          console.log("出错了")
-        })
+        } else {
+          this.$http.post('/api/user/register', {
+            username: name,
+            password: password
+          }, {}).then((response) => {
+            if (response.data.isreg) {
+              this.$message.success(response.data.result.msg);
+              this.$router.go(-1);
+            } else {
+              this.$message.error(response.data.result.msg);
+            }
+          }).catch(() => {
+            alert("出错了")
+          })
         }
       }
     }
